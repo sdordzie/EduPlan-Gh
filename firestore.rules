@@ -1,0 +1,128 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    // Collection: users
+    // Fields: uid, email, displayName, photoURL, role, schoolId, departmentId, createdAt
+    //
+    // Collection: schools
+    // Fields: name, logo, motto, address, type, settings
+    //
+    // Collection: lessonPlans
+    // Fields: facilitatorId, facilitatorName, subject, numLearners, week, duration, form, strand, subStrand, contentStandard, learningOutcomes, indicators, essentialQuestions, pedagogicalStrategies, resources, differentiation, lessons, formativeAssessment, transcriptAssessment, reflection, status, schoolId, periodId, createdAt, updatedAt, comments
+    //
+    // Collection: departments
+    // Fields: name, schoolId
+    //
+    // Collection: subjects
+    // Fields: name, departmentId, schoolId
+    //
+    // Collection: periods
+    // Fields: name, type, startDate, endDate, schoolId
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isSuperAdmin() {
+      return isAuthenticated() && (
+        getUserData().role == 'super_admin' ||
+        (request.auth.token.email == "sdordzie@gmail.com" && request.auth.token.email_verified == true)
+      );
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (isSuperAdmin() || getUserData().role == 'admin');
+    }
+
+    function isHOD() {
+      return isAuthenticated() && (isAdmin() || getUserData().role == 'hod');
+    }
+
+    function isFacilitator() {
+      return isAuthenticated() && (isHOD() || getUserData().role == 'facilitator');
+    }
+
+    function isSameSchool(schoolId) {
+      return isAuthenticated() && (isSuperAdmin() || getUserData().schoolId == schoolId);
+    }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'email', 'role']) &&
+             data.uid is string &&
+             data.email is string &&
+             data.role in ['super_admin', 'admin', 'hod', 'facilitator', 'viewer'];
+    }
+
+    function isValidLessonPlan(data) {
+      return data.keys().hasAll(['facilitatorId', 'subject', 'week', 'status', 'schoolId', 'periodId']) &&
+             data.facilitatorId is string &&
+             data.subject is string &&
+             data.week is number &&
+             data.status in ['draft', 'submitted', 'under_review', 'approved', 'rejected', 'archived'] &&
+             data.schoolId is string &&
+             data.periodId is string;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin() || isHOD());
+      allow create: if isAuthenticated() && (isOwner(userId) || isAdmin()) && isValidUser(request.resource.data);
+      allow update: if isAuthenticated() && (isOwner(userId) || isAdmin()) && isValidUser(request.resource.data);
+      allow delete: if isSuperAdmin();
+    }
+
+    match /schools/{schoolId} {
+      allow read: if isAuthenticated();
+      allow create: if isSuperAdmin();
+      allow update: if isAdmin() && isSameSchool(schoolId);
+      allow delete: if isSuperAdmin();
+    }
+
+    match /lessonPlans/{planId} {
+      allow read: if isAuthenticated() && (
+        isOwner(resource.data.facilitatorId) || 
+        (isHOD() && isSameSchool(resource.data.schoolId)) ||
+        resource.data.status == 'approved'
+      );
+      allow create: if isFacilitator() && isValidLessonPlan(request.resource.data);
+      allow update: if isAuthenticated() && (
+        (isOwner(resource.data.facilitatorId) && resource.data.status in ['draft', 'rejected']) ||
+        (isHOD() && isSameSchool(resource.data.schoolId))
+      ) && isValidLessonPlan(request.resource.data);
+      allow delete: if isAdmin() && isSameSchool(resource.data.schoolId);
+    }
+
+    match /departments/{deptId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    match /subjects/{subjectId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    match /periods/{periodId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+  }
+}

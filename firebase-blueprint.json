@@ -1,0 +1,145 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User account information and role.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "role": { "type": "string", "enum": ["super_admin", "admin", "hod", "facilitator", "viewer"] },
+        "schoolId": { "type": "string" },
+        "departmentId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "School": {
+      "title": "School Profile",
+      "description": "School branding and settings.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "logo": { "type": "string" },
+        "motto": { "type": "string" },
+        "address": { "type": "string" },
+        "type": { "type": "string", "enum": ["basic", "shs"] },
+        "settings": { "type": "object" }
+      },
+      "required": ["name", "type"]
+    },
+    "LessonPlan": {
+      "title": "Lesson Plan",
+      "description": "The core lesson plan document.",
+      "type": "object",
+      "properties": {
+        "facilitatorId": { "type": "string" },
+        "facilitatorName": { "type": "string" },
+        "subject": { "type": "string" },
+        "numLearners": { "type": "number" },
+        "week": { "type": "number" },
+        "duration": { "type": "string" },
+        "form": { "type": "string" },
+        "strand": { "type": "string" },
+        "subStrand": { "type": "string" },
+        "contentStandard": { "type": "string" },
+        "learningOutcomes": { "type": "string" },
+        "indicators": { "type": "string" },
+        "essentialQuestions": { "type": "string" },
+        "pedagogicalStrategies": { "type": "string" },
+        "resources": { "type": "string" },
+        "differentiation": { "type": "string" },
+        "lessons": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "introduction": { "type": "string" },
+              "mainLesson": { "type": "string" },
+              "closure": { "type": "string" }
+            }
+          }
+        },
+        "formativeAssessment": {
+          "type": "object",
+          "properties": {
+            "mode": { "type": "string" },
+            "task": { "type": "string" },
+            "markScheme": { "type": "string" }
+          }
+        },
+        "transcriptAssessment": {
+          "type": "object",
+          "properties": {
+            "mode": { "type": "string" },
+            "task": { "type": "string" },
+            "rubric": { "type": "string" }
+          }
+        },
+        "reflection": { "type": "string" },
+        "status": { "type": "string", "enum": ["draft", "submitted", "under_review", "approved", "rejected", "archived"] },
+        "schoolId": { "type": "string" },
+        "periodId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "comments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "authorId": { "type": "string" },
+              "authorName": { "type": "string" },
+              "text": { "type": "string" },
+              "createdAt": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      },
+      "required": ["facilitatorId", "subject", "week", "status"]
+    },
+    "Department": {
+      "title": "Department",
+      "description": "School department.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "schoolId": { "type": "string" }
+      },
+      "required": ["name", "schoolId"]
+    },
+    "Subject": {
+      "title": "Subject",
+      "description": "School subject.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "departmentId": { "type": "string" },
+        "schoolId": { "type": "string" }
+      },
+      "required": ["name", "schoolId"]
+    },
+    "AcademicPeriod": {
+      "title": "Academic Period",
+      "description": "Academic term or semester.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string", "enum": ["term", "semester"] },
+        "startDate": { "type": "string", "format": "date" },
+        "endDate": { "type": "string", "format": "date" },
+        "schoolId": { "type": "string" }
+      },
+      "required": ["name", "type", "schoolId"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": { "schema": "User", "description": "User profiles" },
+    "/schools/{schoolId}": { "schema": "School", "description": "School settings" },
+    "/lessonPlans/{planId}": { "schema": "LessonPlan", "description": "Lesson plans" },
+    "/departments/{deptId}": { "schema": "Department", "description": "Departments" },
+    "/subjects/{subjectId}": { "schema": "Subject", "description": "Subjects" },
+    "/periods/{periodId}": { "schema": "AcademicPeriod", "description": "Academic periods" }
+  }
+}
