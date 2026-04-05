@@ -26,7 +26,8 @@ export function AdminPanel() {
     name: '',
     motto: '',
     address: '',
-    type: 'basic' as SchoolType
+    type: 'basic' as SchoolType,
+    academicYear: ''
   });
 
   // Dialog states
@@ -53,7 +54,8 @@ export function AdminPanel() {
           name: data.name || '',
           motto: data.motto || '',
           address: data.address || '',
-          type: data.type || 'basic'
+          type: data.type || 'basic',
+          academicYear: data.academicYear || ''
         });
       }
     });
@@ -96,6 +98,7 @@ export function AdminPanel() {
       motto: formData.get('motto') as string,
       address: formData.get('address') as string,
       type: formData.get('type') as SchoolType,
+      academicYear: formData.get('academicYear') as string,
     };
     try {
       await setDoc(doc(db, 'schools', 'default-school'), data, { merge: true });
@@ -260,6 +263,18 @@ export function AdminPanel() {
                       placeholder="e.g. Excellence in Teaching" 
                     />
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="academicYear">Academic Year</Label>
+                    <Input 
+                      id="academicYear" 
+                      name="academicYear" 
+                      value={schoolForm.academicYear} 
+                      onChange={(e) => setSchoolForm(prev => ({ ...prev, academicYear: e.target.value }))} 
+                      placeholder="e.g. 2025/2026" 
+                    />
+                  </div>
+                </div>
+                <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="address">Address</Label>
                     <Input 

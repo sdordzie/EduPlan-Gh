@@ -33,6 +33,8 @@ const formSchema = z.object({
   subject: z.string().min(1, 'Subject is required'),
   numLearners: z.number().min(1, 'Number of learners is required'),
   week: z.number().min(1, 'Week is required'),
+  day: z.string().min(1, 'Day is required'),
+  weekEndingDate: z.string().min(1, 'Week ending date is required'),
   duration: z.string().min(1, 'Duration is required'),
   form: z.string().min(1, 'Form is required'),
   strand: z.string().min(1, 'Strand is required'),
@@ -69,6 +71,8 @@ export function LessonPlanForm({ planId, onCancel, onSuccess }: LessonPlanFormPr
       subject: '',
       numLearners: 0,
       week: 1,
+      day: '',
+      weekEndingDate: '',
       duration: '',
       form: '',
       strand: '',
@@ -122,6 +126,8 @@ export function LessonPlanForm({ planId, onCancel, onSuccess }: LessonPlanFormPr
               subject: data.subject,
               numLearners: data.numLearners,
               week: data.week,
+              day: data.day || '',
+              weekEndingDate: data.weekEndingDate || '',
               duration: data.duration,
               form: data.form,
               strand: data.strand,
@@ -291,6 +297,41 @@ export function LessonPlanForm({ planId, onCancel, onSuccess }: LessonPlanFormPr
                         <FormLabel>Week Number</FormLabel>
                         <FormControl>
                           <Input type="number" {...field} onChange={e => field.onChange(parseInt(e.target.value))} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="day"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Day</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select day" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => (
+                              <SelectItem key={day} value={day}>{day}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="weekEndingDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Week Ending Date</FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

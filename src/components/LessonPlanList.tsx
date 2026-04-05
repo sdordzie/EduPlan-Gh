@@ -76,6 +76,8 @@ export function LessonPlanList({ onView, onEdit, onCreate }: LessonPlanListProps
         subject: 'Mathematics',
         numLearners: 40,
         week: 1,
+        day: 'Monday',
+        weekEndingDate: '2026-04-10',
         duration: '60 mins',
         form: 'Form 1',
         strand: 'Number',
@@ -128,6 +130,8 @@ export function LessonPlanList({ onView, onEdit, onCreate }: LessonPlanListProps
               subject: row.subject || 'Untitled Subject',
               numLearners: parseInt(row.numLearners) || 0,
               week: parseInt(row.week) || 1,
+              day: row.day || '',
+              weekEndingDate: row.weekEndingDate || '',
               duration: row.duration || '',
               form: row.form || '',
               strand: row.strand || '',
@@ -325,8 +329,11 @@ export function LessonPlanList({ onView, onEdit, onCreate }: LessonPlanListProps
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
                     <CardTitle className="text-lg font-bold text-slate-900">{plan.subject}</CardTitle>
-                    <CardDescription className="flex items-center text-xs">
-                      Week {plan.week} • {plan.form}
+                    <CardDescription className="flex flex-col text-xs space-y-1">
+                      <span>Week {plan.week} • {plan.form}</span>
+                      {plan.day && plan.weekEndingDate && (
+                        <span className="text-slate-400">{plan.day} • Ending: {format(new Date(plan.weekEndingDate), 'MMM d')}</span>
+                      )}
                     </CardDescription>
                   </div>
                   {getStatusBadge(plan.status)}

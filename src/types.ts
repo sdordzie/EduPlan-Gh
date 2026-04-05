@@ -10,6 +10,7 @@ export interface UserProfile {
   role: UserRole;
   schoolId?: string;
   departmentId?: string;
+  class?: string;
   createdAt: string;
 }
 
@@ -20,6 +21,7 @@ export interface School {
   motto?: string;
   address?: string;
   type: SchoolType;
+  academicYear?: string;
   settings?: any;
 }
 
@@ -52,6 +54,8 @@ export interface LessonPlan {
   subject: string;
   numLearners: number;
   week: number;
+  day?: string;
+  weekEndingDate?: string;
   duration: string;
   form: string;
   strand: string;
@@ -95,4 +99,19 @@ export interface AcademicPeriod {
   startDate: string;
   endDate: string;
   schoolId: string;
+}
+
+export type MaterialType = 'link' | 'note' | 'file';
+
+export interface Material {
+  id: string;
+  name: string;
+  description?: string;
+  type: MaterialType;
+  content: string;
+  userId: string;
+  mimeType?: string;
+  size?: number;
+  createdAt: string;
+  updatedAt: string;
 }

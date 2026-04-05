@@ -40,6 +40,8 @@
         "subject": { "type": "string" },
         "numLearners": { "type": "number" },
         "week": { "type": "number" },
+        "day": { "type": "string" },
+        "weekEndingDate": { "type": "string", "format": "date" },
         "duration": { "type": "string" },
         "form": { "type": "string" },
         "strand": { "type": "string" },
@@ -132,6 +134,23 @@
         "schoolId": { "type": "string" }
       },
       "required": ["name", "type", "schoolId"]
+    },
+    "Material": {
+      "title": "Material",
+      "description": "User uploaded materials or documents.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "type": { "type": "string", "enum": ["link", "note", "file"] },
+        "content": { "type": "string", "description": "URL for links/files, or text content for notes" },
+        "userId": { "type": "string" },
+        "mimeType": { "type": "string" },
+        "size": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "type", "userId"]
     }
   },
   "firestore": {
@@ -140,6 +159,7 @@
     "/lessonPlans/{planId}": { "schema": "LessonPlan", "description": "Lesson plans" },
     "/departments/{deptId}": { "schema": "Department", "description": "Departments" },
     "/subjects/{subjectId}": { "schema": "Subject", "description": "Subjects" },
-    "/periods/{periodId}": { "schema": "AcademicPeriod", "description": "Academic periods" }
+    "/periods/{periodId}": { "schema": "AcademicPeriod", "description": "Academic periods" },
+    "/materials/{materialId}": { "schema": "Material", "description": "User materials" }
   }
 }

@@ -192,6 +192,18 @@ export function LessonPlanView({ planId, onBack, onEdit }: LessonPlanViewProps) 
           <h2 className="text-3xl font-black uppercase tracking-widest text-slate-900">Weekly Lesson Planner</h2>
           <div className="mt-2 flex items-center justify-center gap-4 text-slate-600 font-medium">
             <span className="flex items-center gap-1"><Calendar size={16} /> Week {plan.week}</span>
+            {plan.day && (
+              <>
+                <span>•</span>
+                <span className="flex items-center gap-1">{plan.day}</span>
+              </>
+            )}
+            {plan.weekEndingDate && (
+              <>
+                <span>•</span>
+                <span className="flex items-center gap-1">Ending: {format(new Date(plan.weekEndingDate), 'MMM d, yyyy')}</span>
+              </>
+            )}
             <span>•</span>
             <span className="flex items-center gap-1"><Users size={16} /> {plan.form}</span>
             <span>•</span>
@@ -200,10 +212,12 @@ export function LessonPlanView({ planId, onBack, onEdit }: LessonPlanViewProps) 
         </div>
 
         {/* General Info Grid */}
-        <div className="grid grid-cols-2 gap-x-8 gap-y-4 mb-10 bg-slate-50 p-6 rounded-xl border border-slate-100">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-4 mb-10 bg-slate-50 p-6 rounded-xl border border-slate-100 md:grid-cols-3">
           <InfoItem label="Facilitator" value={plan.facilitatorName} />
           <InfoItem label="No. of Learners" value={plan.numLearners} />
           <InfoItem label="Duration" value={plan.duration} />
+          <InfoItem label="Day" value={plan.day || 'N/A'} />
+          <InfoItem label="Week Ending" value={plan.weekEndingDate ? format(new Date(plan.weekEndingDate), 'MMM d, yyyy') : 'N/A'} />
           <InfoItem label={school?.type === 'shs' ? 'Semester' : 'Term'} value={period?.name || 'N/A'} />
         </div>
 

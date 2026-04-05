@@ -1,11 +1,11 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { auth, db, googleProvider, OperationType, handleFirestoreError } from './firebase';
 import { onAuthStateChanged, signInWithPopup, signOut, User as FirebaseUser } from 'firebase/auth';
-import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
-import { UserProfile, UserRole } from './types';
+import { doc, getDoc, setDoc, onSnapshot, updateDoc } from 'firebase/firestore';
+import { UserProfile, UserRole, School } from './types';
 import { Toaster } from '@/components/ui/sonner';
 import { toast } from 'sonner';
-import { Loader2, LogIn, LogOut, LayoutDashboard, FileText, Settings, Users, GraduationCap, Printer, Plus, Search, Filter, ChevronRight, Menu, X, CheckCircle2, Clock, AlertCircle, FilePlus, Copy, Eye, Edit, Trash2 } from 'lucide-react';
+import { Loader2, LogIn, LogOut, LayoutDashboard, FileText, Settings, Users, GraduationCap, Printer, Plus, Search, Filter, ChevronRight, Menu, X, CheckCircle2, Clock, AlertCircle, FilePlus, Copy, Eye, Edit, Trash2, FolderOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -18,6 +18,9 @@ import { LessonPlanForm } from '@/components/LessonPlanForm';
 import { LessonPlanList } from '@/components/LessonPlanList';
 import { LessonPlanView } from '@/components/LessonPlanView';
 import { AdminPanel } from '@/components/AdminPanel';
+import { DocumentVault } from '@/components/DocumentVault';
+import { UserProfile as UserProfileComponent } from '@/components/UserProfile';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 // --- Context ---
 interface AuthContextType {
@@ -40,8 +43,9 @@ export const useAuth = () => {
 export default function App() {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [school, setSchool] = useState<School | null>(null);
   const [loading, setLoading] = useState(true);
-  const [currentView, setCurrentView] = useState<'dashboard' | 'create' | 'edit' | 'view' | 'admin'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'create' | 'edit' | 'view' | 'admin' | 'vault' | 'profile'>('dashboard');
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -52,18 +56,28 @@ export default function App() {
           // Ensure default school exists
           const schoolDoc = await getDoc(doc(db, 'schools', 'default-school'));
           if (!schoolDoc.exists()) {
-            await setDoc(doc(db, 'schools', 'default-school'), {
+            const defaultSchool = {
               name: 'EduPlan Pro Academy',
               type: 'basic',
               motto: 'Excellence in Teaching and Learning',
               address: 'P.O. Box 123, Accra, Ghana',
+              academicYear: '2025/2026',
               createdAt: new Date().toISOString(),
-            });
+            };
+            await setDoc(doc(db, 'schools', 'default-school'), defaultSchool);
+            setSchool({ id: 'default-school', ...defaultSchool } as School);
+          } else {
+            setSchool({ id: 'default-school', ...schoolDoc.data() } as School);
           }
 
           const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
           if (userDoc.exists()) {
-            setProfile(userDoc.data() as UserProfile);
+            const data = userDoc.data() as UserProfile;
+            if (!data.schoolId) {
+              await updateDoc(doc(db, 'users', firebaseUser.uid), { schoolId: 'default-school' });
+              data.schoolId = 'default-school';
+            }
+            setProfile(data);
           } else {
             // Create initial profile for new user
             const isDefaultAdmin = firebaseUser.email === "sdordzie@gmail.com";
@@ -74,6 +88,7 @@ export default function App() {
               photoURL: firebaseUser.photoURL || '',
               role: isDefaultAdmin ? 'super_admin' : 'facilitator',
               schoolId: 'default-school',
+              class: '',
               createdAt: new Date().toISOString(),
             };
             await setDoc(doc(db, 'users', firebaseUser.uid), newProfile);
@@ -84,12 +99,35 @@ export default function App() {
         }
       } else {
         setProfile(null);
+        setSchool(null);
       }
       setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
+
+  // Real-time school updates
+  useEffect(() => {
+    if (!profile?.schoolId) return;
+    const unsubscribe = onSnapshot(doc(db, 'schools', profile.schoolId), (snapshot) => {
+      if (snapshot.exists()) {
+        setSchool({ id: snapshot.id, ...snapshot.data() } as School);
+      }
+    });
+    return () => unsubscribe();
+  }, [profile?.schoolId]);
+
+  // Real-time profile updates
+  useEffect(() => {
+    if (!user?.uid) return;
+    const unsubscribe = onSnapshot(doc(db, 'users', user.uid), (snapshot) => {
+      if (snapshot.exists()) {
+        setProfile(snapshot.data() as UserProfile);
+      }
+    });
+    return () => unsubscribe();
+  }, [user?.uid]);
 
   const signIn = async () => {
     try {
@@ -156,7 +194,8 @@ export default function App() {
 
   return (
     <AuthContext.Provider value={{ user, profile, loading, signIn, logout }}>
-      <div className="flex min-h-screen bg-slate-50">
+      <ErrorBoundary>
+        <div className="flex min-h-screen bg-slate-50">
         {/* Sidebar */}
         <aside className="hidden w-64 flex-col border-r bg-white md:flex">
           <div className="flex h-16 items-center border-b px-6">
@@ -166,6 +205,7 @@ export default function App() {
           <nav className="flex-1 space-y-1 p-4">
             <NavItem icon={<LayoutDashboard size={20} />} label="Dashboard" active={currentView === 'dashboard'} onClick={() => setCurrentView('dashboard')} />
             <NavItem icon={<FilePlus size={20} />} label="New Plan" active={currentView === 'create'} onClick={() => setCurrentView('create')} />
+            <NavItem icon={<FolderOpen size={20} />} label="Material Vault" active={currentView === 'vault'} onClick={() => setCurrentView('vault')} />
             {(profile?.role === 'admin' || profile?.role === 'super_admin') && (
               <NavItem icon={<Settings size={20} />} label="Admin Panel" active={currentView === 'admin'} onClick={() => setCurrentView('admin')} />
             )}
@@ -194,16 +234,32 @@ export default function App() {
               <GraduationCap className="mr-2 text-primary" />
               <span className="text-lg font-bold">EduPlan Pro</span>
             </div>
-            <h2 className="hidden text-lg font-semibold text-slate-900 md:block">
-              {currentView === 'dashboard' && 'Dashboard Overview'}
-              {currentView === 'create' && 'Create Lesson Plan'}
-              {currentView === 'edit' && 'Edit Lesson Plan'}
-              {currentView === 'view' && 'View Lesson Plan'}
-              {currentView === 'admin' && 'School Administration'}
-            </h2>
+            <div className="flex flex-col">
+              <h2 className="hidden text-lg font-bold text-slate-900 md:block leading-tight">
+                {school?.name || 'EduPlan Pro'}
+              </h2>
+              {school?.address && (
+                <p className="hidden text-[10px] text-slate-500 md:block leading-tight font-medium">
+                  {school.address}
+                </p>
+              )}
+            </div>
             <div className="flex items-center gap-4">
+              <div className="hidden lg:flex flex-col items-end text-right mr-2">
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Academic Year</span>
+                <span className="text-xs font-bold text-primary">{school?.academicYear || 'N/A'}</span>
+              </div>
+              
+              {/* Handling Class - Always show for facilitators/HODs, only show for admins if set */}
+              {((profile?.role === 'facilitator' || profile?.role === 'hod') || (profile?.class && profile?.class !== 'N/A' && profile?.class !== '')) && (
+                <div className="hidden lg:flex flex-col items-end text-right mr-2 border-l pl-4">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Handling Class</span>
+                  <span className="text-xs font-bold text-slate-700">{profile?.class || 'N/A'}</span>
+                </div>
+              )}
+
               <Badge variant="outline" className="hidden sm:inline-flex">
-                {profile?.schoolId ? 'School Connected' : 'No School Assigned'}
+                {profile?.schoolId ? 'Connected' : 'No School'}
               </Badge>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -219,7 +275,10 @@ export default function App() {
                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => setCurrentView('profile')}>My Profile</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setCurrentView('vault')}>Material Vault</DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setCurrentView('dashboard')}>Dashboard</DropdownMenuItem>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={logout} className="text-red-600">Logout</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -257,9 +316,16 @@ export default function App() {
             {currentView === 'admin' && (
               <AdminPanel />
             )}
+            {currentView === 'vault' && (
+              <DocumentVault />
+            )}
+            {currentView === 'profile' && (
+              <UserProfileComponent />
+            )}
           </div>
         </main>
       </div>
+      </ErrorBoundary>
       <Toaster position="top-right" />
     </AuthContext.Provider>
   );

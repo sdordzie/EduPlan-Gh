@@ -11,7 +11,7 @@ service cloud.firestore {
     // Fields: name, logo, motto, address, type, settings
     //
     // Collection: lessonPlans
-    // Fields: facilitatorId, facilitatorName, subject, numLearners, week, duration, form, strand, subStrand, contentStandard, learningOutcomes, indicators, essentialQuestions, pedagogicalStrategies, resources, differentiation, lessons, formativeAssessment, transcriptAssessment, reflection, status, schoolId, periodId, createdAt, updatedAt, comments
+    // Fields: facilitatorId, facilitatorName, subject, numLearners, week, day, weekEndingDate, duration, form, strand, subStrand, contentStandard, learningOutcomes, indicators, essentialQuestions, pedagogicalStrategies, resources, differentiation, lessons, formativeAssessment, transcriptAssessment, reflection, status, schoolId, periodId, createdAt, updatedAt, comments
     //
     // Collection: departments
     // Fields: name, schoolId
@@ -40,8 +40,8 @@ service cloud.firestore {
 
     function isSuperAdmin() {
       return isAuthenticated() && (
-        getUserData().role == 'super_admin' ||
-        (request.auth.token.email == "sdordzie@gmail.com" && request.auth.token.email_verified == true)
+        (request.auth.token.email == "sdordzie@gmail.com" && request.auth.token.email_verified == true) ||
+        getUserData().role == 'super_admin'
       );
     }
 
@@ -69,10 +69,12 @@ service cloud.firestore {
     }
 
     function isValidLessonPlan(data) {
-      return data.keys().hasAll(['facilitatorId', 'subject', 'week', 'status', 'schoolId', 'periodId']) &&
+      return data.keys().hasAll(['facilitatorId', 'subject', 'week', 'day', 'weekEndingDate', 'status', 'schoolId', 'periodId']) &&
              data.facilitatorId is string &&
              data.subject is string &&
              data.week is number &&
+             data.day is string &&
+             data.weekEndingDate is string &&
              data.status in ['draft', 'submitted', 'under_review', 'approved', 'rejected', 'archived'] &&
              data.schoolId is string &&
              data.periodId is string;
@@ -123,6 +125,13 @@ service cloud.firestore {
     match /periods/{periodId} {
       allow read: if isAuthenticated();
       allow write: if isAdmin();
+    }
+    
+    match /materials/{materialId} {
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isSuperAdmin());
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated() && (resource.data.userId == request.auth.uid || isSuperAdmin()) && request.resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && (resource.data.userId == request.auth.uid || isSuperAdmin());
     }
   }
 }
