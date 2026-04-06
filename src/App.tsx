@@ -3,9 +3,10 @@ import { auth, db, googleProvider, OperationType, handleFirestoreError } from '.
 import { onAuthStateChanged, signInWithPopup, signOut, User as FirebaseUser } from 'firebase/auth';
 import { doc, getDoc, setDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { UserProfile, UserRole, School } from './types';
+import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import { Toaster } from '@/components/ui/sonner';
 import { toast } from 'sonner';
-import { Loader2, LogIn, LogOut, LayoutDashboard, FileText, Settings, Users, GraduationCap, Printer, Plus, Search, Filter, ChevronRight, Menu, X, CheckCircle2, Clock, AlertCircle, FilePlus, Copy, Eye, Edit, Trash2, FolderOpen } from 'lucide-react';
+import { Loader2, LogIn, LogOut, LayoutDashboard, FileText, Settings, Users, GraduationCap, Printer, Plus, Search, Filter, ChevronRight, Menu, X, CheckCircle2, Clock, AlertCircle, FilePlus, Copy, Eye, Edit, Trash2, FolderOpen, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -193,14 +194,55 @@ export default function App() {
   }
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signIn, logout }}>
-      <ErrorBoundary>
-        <div className="flex min-h-screen bg-slate-50">
+    <ThemeProvider initialColors={school?.themeColors}>
+      <AuthContext.Provider value={{ user, profile, loading, signIn, logout }}>
+        <AppContent 
+          currentView={currentView} 
+          setCurrentView={setCurrentView} 
+          selectedPlanId={selectedPlanId} 
+          setSelectedPlanId={setSelectedPlanId}
+          school={school}
+          logout={logout}
+          profile={profile}
+        />
+      </AuthContext.Provider>
+    </ThemeProvider>
+  );
+}
+
+function AppContent({ 
+  currentView, 
+  setCurrentView, 
+  selectedPlanId, 
+  setSelectedPlanId, 
+  school, 
+  logout, 
+  profile 
+}: { 
+  currentView: any, 
+  setCurrentView: any, 
+  selectedPlanId: any, 
+  setSelectedPlanId: any, 
+  school: School | null, 
+  logout: any, 
+  profile: UserProfile | null 
+}) {
+  const { theme, toggleTheme, setColors } = useTheme();
+
+  useEffect(() => {
+    if (school?.themeColors) {
+      setColors(school.themeColors);
+    }
+  }, [school?.themeColors]);
+
+  return (
+    <ErrorBoundary>
+      <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
         {/* Sidebar */}
-        <aside className="hidden w-64 flex-col border-r bg-white md:flex">
-          <div className="flex h-16 items-center border-b px-6">
+        <aside className="hidden w-64 flex-col border-r bg-white dark:bg-slate-900 dark:border-slate-800 md:flex">
+          <div className="flex h-16 items-center border-b dark:border-slate-800 px-6">
             <GraduationCap className="mr-2 text-primary" />
-            <span className="text-xl font-bold text-slate-900">EduPlan Pro</span>
+            <span className="text-xl font-bold text-slate-900 dark:text-white">EduPlan Pro</span>
           </div>
           <nav className="flex-1 space-y-1 p-4">
             <NavItem icon={<LayoutDashboard size={20} />} label="Dashboard" active={currentView === 'dashboard'} onClick={() => setCurrentView('dashboard')} />
@@ -210,14 +252,25 @@ export default function App() {
               <NavItem icon={<Settings size={20} />} label="Admin Panel" active={currentView === 'admin'} onClick={() => setCurrentView('admin')} />
             )}
           </nav>
-          <div className="border-t p-4">
+          <div className="border-t dark:border-slate-800 p-4">
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start mb-2 text-slate-600 dark:text-slate-400" 
+              onClick={toggleTheme}
+            >
+              {theme === 'light' ? (
+                <><Moon className="mr-2 h-4 w-4" /> Dark Mode</>
+              ) : (
+                <><Sun className="mr-2 h-4 w-4" /> Light Mode</>
+              )}
+            </Button>
             <div className="flex items-center gap-3 px-2 py-3">
-              <Avatar className="h-10 w-10 border">
+              <Avatar className="h-10 w-10 border dark:border-slate-700">
                 <AvatarImage src={profile?.photoURL} />
                 <AvatarFallback>{profile?.displayName?.charAt(0)}</AvatarFallback>
               </Avatar>
               <div className="flex-1 overflow-hidden">
-                <p className="truncate text-sm font-medium text-slate-900">{profile?.displayName}</p>
+                <p className="truncate text-sm font-medium text-slate-900 dark:text-white">{profile?.displayName}</p>
                 <p className="truncate text-xs text-slate-500 capitalize">{profile?.role.replace('_', ' ')}</p>
               </div>
               <Button variant="ghost" size="icon" onClick={logout} title="Logout">
@@ -229,13 +282,13 @@ export default function App() {
 
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto">
-          <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b bg-white/80 px-6 backdrop-blur-md md:px-8">
+          <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b bg-white/80 dark:bg-slate-900/80 dark:border-slate-800 px-6 backdrop-blur-md md:px-8">
             <div className="flex items-center md:hidden">
               <GraduationCap className="mr-2 text-primary" />
-              <span className="text-lg font-bold">EduPlan Pro</span>
+              <span className="text-lg font-bold dark:text-white">EduPlan Pro</span>
             </div>
             <div className="flex flex-col">
-              <h2 className="hidden text-lg font-bold text-slate-900 md:block leading-tight">
+              <h2 className="hidden text-lg font-bold text-slate-900 dark:text-white md:block leading-tight">
                 {school?.name || 'EduPlan Pro'}
               </h2>
               {school?.address && (
@@ -252,13 +305,13 @@ export default function App() {
               
               {/* Handling Class - Always show for facilitators/HODs, only show for admins if set */}
               {((profile?.role === 'facilitator' || profile?.role === 'hod') || (profile?.class && profile?.class !== 'N/A' && profile?.class !== '')) && (
-                <div className="hidden lg:flex flex-col items-end text-right mr-2 border-l pl-4">
+                <div className="hidden lg:flex flex-col items-end text-right mr-2 border-l pl-4 dark:border-slate-800">
                   <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Handling Class</span>
-                  <span className="text-xs font-bold text-slate-700">{profile?.class || 'N/A'}</span>
+                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{profile?.class || 'N/A'}</span>
                 </div>
               )}
 
-              <Badge variant="outline" className="hidden sm:inline-flex">
+              <Badge variant="outline" className="hidden sm:inline-flex dark:border-slate-700 dark:text-slate-400">
                 {profile?.schoolId ? 'Connected' : 'No School'}
               </Badge>
               <DropdownMenu>
@@ -270,16 +323,16 @@ export default function App() {
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" className="dark:bg-slate-900 dark:border-slate-800">
                   <DropdownMenuGroup>
-                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuLabel className="dark:text-white">My Account</DropdownMenuLabel>
                   </DropdownMenuGroup>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => setCurrentView('profile')}>My Profile</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setCurrentView('vault')}>Material Vault</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setCurrentView('dashboard')}>Dashboard</DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={logout} className="text-red-600">Logout</DropdownMenuItem>
+                  <DropdownMenuSeparator className="dark:bg-slate-800" />
+                  <DropdownMenuItem onClick={() => setCurrentView('profile')} className="dark:text-slate-300 dark:focus:bg-slate-800">My Profile</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setCurrentView('vault')} className="dark:text-slate-300 dark:focus:bg-slate-800">Material Vault</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setCurrentView('dashboard')} className="dark:text-slate-300 dark:focus:bg-slate-800">Dashboard</DropdownMenuItem>
+                  <DropdownMenuSeparator className="dark:bg-slate-800" />
+                  <DropdownMenuItem onClick={logout} className="text-red-600 dark:text-red-400 dark:focus:bg-slate-800">Logout</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -325,9 +378,8 @@ export default function App() {
           </div>
         </main>
       </div>
-      </ErrorBoundary>
       <Toaster position="top-right" />
-    </AuthContext.Provider>
+    </ErrorBoundary>
   );
 }
 
@@ -337,8 +389,8 @@ function NavItem({ icon, label, active, onClick }: { icon: ReactNode, label: str
       onClick={onClick}
       className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
         active 
-          ? 'bg-primary text-white' 
-          : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+          ? 'bg-primary text-primary-foreground' 
+          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
       }`}
     >
       {icon}

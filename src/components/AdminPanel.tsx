@@ -27,7 +27,12 @@ export function AdminPanel() {
     motto: '',
     address: '',
     type: 'basic' as SchoolType,
-    academicYear: ''
+    academicYear: '',
+    themeColors: {
+      primary: '#0f172a',
+      secondary: '#64748b',
+      accent: '#3b82f6'
+    }
   });
 
   // Dialog states
@@ -55,7 +60,12 @@ export function AdminPanel() {
           motto: data.motto || '',
           address: data.address || '',
           type: data.type || 'basic',
-          academicYear: data.academicYear || ''
+          academicYear: data.academicYear || '',
+          themeColors: data.themeColors || {
+            primary: '#0f172a',
+            secondary: '#64748b',
+            accent: '#3b82f6'
+          }
         });
       }
     });
@@ -92,13 +102,13 @@ export function AdminPanel() {
 
   const handleUpdateSchool = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
     const data = {
-      name: formData.get('name') as string,
-      motto: formData.get('motto') as string,
-      address: formData.get('address') as string,
-      type: formData.get('type') as SchoolType,
-      academicYear: formData.get('academicYear') as string,
+      name: schoolForm.name,
+      motto: schoolForm.motto,
+      address: schoolForm.address,
+      type: schoolForm.type,
+      academicYear: schoolForm.academicYear,
+      themeColors: schoolForm.themeColors,
     };
     try {
       await setDoc(doc(db, 'schools', 'default-school'), data, { merge: true });
@@ -272,6 +282,83 @@ export function AdminPanel() {
                       onChange={(e) => setSchoolForm(prev => ({ ...prev, academicYear: e.target.value }))} 
                       placeholder="e.g. 2025/2026" 
                     />
+                  </div>
+                  <div className="space-y-4 border rounded-lg p-4 bg-slate-50/50 dark:bg-slate-900/50">
+                    <h4 className="text-sm font-semibold">Theme Colors</h4>
+                    <div className="grid gap-4 md:grid-cols-3">
+                      <div className="space-y-2">
+                        <Label htmlFor="primaryColor">Primary Color</Label>
+                        <div className="flex gap-2">
+                          <Input 
+                            id="primaryColor" 
+                            type="color"
+                            value={schoolForm.themeColors.primary} 
+                            onChange={(e) => setSchoolForm(prev => ({ 
+                              ...prev, 
+                              themeColors: { ...prev.themeColors, primary: e.target.value } 
+                            }))} 
+                            className="w-12 h-10 p-1"
+                          />
+                          <Input 
+                            value={schoolForm.themeColors.primary} 
+                            onChange={(e) => setSchoolForm(prev => ({ 
+                              ...prev, 
+                              themeColors: { ...prev.themeColors, primary: e.target.value } 
+                            }))} 
+                            placeholder="#000000"
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="secondaryColor">Secondary Color</Label>
+                        <div className="flex gap-2">
+                          <Input 
+                            id="secondaryColor" 
+                            type="color"
+                            value={schoolForm.themeColors.secondary} 
+                            onChange={(e) => setSchoolForm(prev => ({ 
+                              ...prev, 
+                              themeColors: { ...prev.themeColors, secondary: e.target.value } 
+                            }))} 
+                            className="w-12 h-10 p-1"
+                          />
+                          <Input 
+                            value={schoolForm.themeColors.secondary} 
+                            onChange={(e) => setSchoolForm(prev => ({ 
+                              ...prev, 
+                              themeColors: { ...prev.themeColors, secondary: e.target.value } 
+                            }))} 
+                            placeholder="#000000"
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="accentColor">Accent Color</Label>
+                        <div className="flex gap-2">
+                          <Input 
+                            id="accentColor" 
+                            type="color"
+                            value={schoolForm.themeColors.accent} 
+                            onChange={(e) => setSchoolForm(prev => ({ 
+                              ...prev, 
+                              themeColors: { ...prev.themeColors, accent: e.target.value } 
+                            }))} 
+                            className="w-12 h-10 p-1"
+                          />
+                          <Input 
+                            value={schoolForm.themeColors.accent} 
+                            onChange={(e) => setSchoolForm(prev => ({ 
+                              ...prev, 
+                              themeColors: { ...prev.themeColors, accent: e.target.value } 
+                            }))} 
+                            placeholder="#000000"
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div className="grid gap-4 md:grid-cols-2">

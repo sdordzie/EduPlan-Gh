@@ -22,7 +22,14 @@ export interface School {
   address?: string;
   type: SchoolType;
   academicYear?: string;
-  settings?: any;
+  themeColors?: {
+    primary: string;
+    secondary: string;
+    accent: string;
+  };
+  settings?: {
+    darkModeEnabled?: boolean;
+  };
 }
 
 export interface LessonPlanComment {

@@ -163,11 +163,11 @@ export function LessonPlanView({ planId, onBack, onEdit }: LessonPlanViewProps) 
       </div>
 
       {/* Main Document */}
-      <div ref={printRef} className="bg-white p-8 shadow-lg border rounded-lg print:shadow-none print:border-none print:p-0">
+      <div ref={printRef} className="bg-white dark:bg-slate-950 p-8 shadow-lg border dark:border-slate-800 rounded-lg print:shadow-none print:border-none print:p-0">
         {/* School Header */}
         <div className="flex items-center justify-between border-b-2 border-primary pb-6 mb-8">
           <div className="flex items-center gap-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-primary text-white overflow-hidden">
+            <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-primary text-primary-foreground overflow-hidden">
               {school?.logo ? (
                 <img src={school.logo} alt={school.name} className="h-full w-full object-cover" referrerPolicy="no-referrer" />
               ) : (
@@ -175,22 +175,22 @@ export function LessonPlanView({ planId, onBack, onEdit }: LessonPlanViewProps) 
               )}
             </div>
             <div>
-              <h1 className="text-2xl font-black uppercase tracking-tight text-slate-900">{school?.name || 'EduPlan Pro Academy'}</h1>
-              <p className="text-sm font-medium text-slate-500 italic">"{school?.motto || 'Excellence in Teaching and Learning'}"</p>
-              <p className="text-xs text-slate-400 mt-1">{school?.address || 'P.O. Box 123, Accra, Ghana'}</p>
+              <h1 className="text-2xl font-black uppercase tracking-tight text-slate-900 dark:text-white">{school?.name || 'EduPlan Pro Academy'}</h1>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400 italic">"{school?.motto || 'Excellence in Teaching and Learning'}"</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{school?.address || 'P.O. Box 123, Accra, Ghana'}</p>
             </div>
           </div>
           <div className="text-right">
-            <div className="inline-block rounded-lg bg-slate-100 px-4 py-2 text-center">
-              <p className="text-xs font-bold uppercase text-slate-500">Academic Year</p>
-              <p className="text-lg font-bold text-slate-900">2025/2026</p>
+            <div className="inline-block rounded-lg bg-slate-100 dark:bg-slate-800 px-4 py-2 text-center">
+              <p className="text-xs font-bold uppercase text-slate-500 dark:text-slate-400">Academic Year</p>
+              <p className="text-lg font-bold text-slate-900 dark:text-white">2025/2026</p>
             </div>
           </div>
         </div>
 
         <div className="text-center mb-10">
-          <h2 className="text-3xl font-black uppercase tracking-widest text-slate-900">Weekly Lesson Planner</h2>
-          <div className="mt-2 flex items-center justify-center gap-4 text-slate-600 font-medium">
+          <h2 className="text-3xl font-black uppercase tracking-widest text-slate-900 dark:text-white">Weekly Lesson Planner</h2>
+          <div className="mt-2 flex items-center justify-center gap-4 text-slate-600 dark:text-slate-400 font-medium">
             <span className="flex items-center gap-1"><Calendar size={16} /> Week {plan.week}</span>
             {plan.day && (
               <>
@@ -212,7 +212,7 @@ export function LessonPlanView({ planId, onBack, onEdit }: LessonPlanViewProps) 
         </div>
 
         {/* General Info Grid */}
-        <div className="grid grid-cols-2 gap-x-8 gap-y-4 mb-10 bg-slate-50 p-6 rounded-xl border border-slate-100 md:grid-cols-3">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-4 mb-10 bg-slate-50 dark:bg-slate-900/50 p-6 rounded-xl border border-slate-100 dark:border-slate-800 md:grid-cols-3">
           <InfoItem label="Facilitator" value={plan.facilitatorName} />
           <InfoItem label="No. of Learners" value={plan.numLearners} />
           <InfoItem label="Duration" value={plan.duration} />
@@ -249,8 +249,8 @@ export function LessonPlanView({ planId, onBack, onEdit }: LessonPlanViewProps) 
           <div className="space-y-8">
             {plan.lessons.map((lesson, idx) => (
               <div key={idx} className="border-l-4 border-primary/20 pl-6 py-2">
-                <h4 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-white text-xs">{idx + 1}</span>
+                <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs">{idx + 1}</span>
                   Lesson {idx + 1}
                 </h4>
                 <div className="grid gap-6">
@@ -267,7 +267,7 @@ export function LessonPlanView({ planId, onBack, onEdit }: LessonPlanViewProps) 
         <Section title="Assessment & Evaluation" icon={<CheckSquare className="text-primary" />}>
           <div className="grid gap-8 md:grid-cols-2">
             <div className="space-y-4">
-              <h4 className="font-bold text-slate-900 flex items-center gap-2">
+              <h4 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <ClipboardList size={18} className="text-primary" />
                 Formative Assessment
               </h4>
@@ -276,7 +276,7 @@ export function LessonPlanView({ planId, onBack, onEdit }: LessonPlanViewProps) 
               <DetailItem label="Mark Scheme" value={plan.formativeAssessment.markScheme} />
             </div>
             <div className="space-y-4">
-              <h4 className="font-bold text-slate-900 flex items-center gap-2">
+              <h4 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <GraduationCap size={18} className="text-primary" />
                 Transcript Portal Assessment
               </h4>
@@ -289,11 +289,11 @@ export function LessonPlanView({ planId, onBack, onEdit }: LessonPlanViewProps) 
 
         {/* Reflection Section */}
         <Section title="Reflection & Remarks" icon={<MessageCircle className="text-primary" />}>
-          <p className="text-slate-700 leading-relaxed whitespace-pre-wrap">{plan.reflection || "No reflection recorded yet."}</p>
+          <p className="text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">{plan.reflection || "No reflection recorded yet."}</p>
         </Section>
 
         {/* Signatures */}
-        <div className="mt-16 grid grid-cols-3 gap-8 pt-8 border-t border-slate-200">
+        <div className="mt-16 grid grid-cols-3 gap-8 pt-8 border-t border-slate-200 dark:border-slate-800">
           <SignatureLine label="Facilitator" name={plan.facilitatorName} />
           <SignatureLine label="Head of Department" />
           <SignatureLine label="Academic Coordinator" />
@@ -312,16 +312,16 @@ export function LessonPlanView({ planId, onBack, onEdit }: LessonPlanViewProps) 
           <div className="space-y-4">
             {plan.comments && plan.comments.length > 0 ? (
               plan.comments.map((c, i) => (
-                <div key={i} className="flex gap-4 rounded-lg bg-slate-50 p-4 border border-slate-100">
+                <div key={i} className="flex gap-4 rounded-lg bg-slate-50 dark:bg-slate-900/50 p-4 border border-slate-100 dark:border-slate-800">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold">
                     {c.authorName.charAt(0)}
                   </div>
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-slate-900">{c.authorName}</span>
-                      <span className="text-xs text-slate-400">{format(new Date(c.createdAt), 'MMM d, h:mm a')}</span>
+                      <span className="font-bold text-slate-900 dark:text-white">{c.authorName}</span>
+                      <span className="text-xs text-slate-400 dark:text-slate-500">{format(new Date(c.createdAt), 'MMM d, h:mm a')}</span>
                     </div>
-                    <p className="text-sm text-slate-700">{c.text}</p>
+                    <p className="text-sm text-slate-700 dark:text-slate-300">{c.text}</p>
                   </div>
                 </div>
               ))
@@ -352,8 +352,8 @@ export function LessonPlanView({ planId, onBack, onEdit }: LessonPlanViewProps) 
 function InfoItem({ label, value }: { label: string, value: string | number }) {
   return (
     <div className="flex flex-col">
-      <span className="text-xs font-bold uppercase tracking-wider text-slate-400">{label}</span>
-      <span className="text-lg font-bold text-slate-900">{value}</span>
+      <span className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">{label}</span>
+      <span className="text-lg font-bold text-slate-900 dark:text-white">{value}</span>
     </div>
   );
 }
@@ -361,9 +361,9 @@ function InfoItem({ label, value }: { label: string, value: string | number }) {
 function Section({ title, icon, children }: { title: string, icon: React.ReactNode, children: React.ReactNode }) {
   return (
     <div className="mb-12">
-      <div className="flex items-center gap-3 mb-6 border-b pb-2">
+      <div className="flex items-center gap-3 mb-6 border-b dark:border-slate-800 pb-2">
         {icon}
-        <h3 className="text-xl font-black uppercase tracking-wide text-slate-900">{title}</h3>
+        <h3 className="text-xl font-black uppercase tracking-wide text-slate-900 dark:text-white">{title}</h3>
       </div>
       {children}
     </div>
@@ -374,7 +374,7 @@ function DetailItem({ label, value }: { label: string, value?: string }) {
   return (
     <div className="space-y-1">
       <span className="text-xs font-black uppercase tracking-widest text-primary/70">{label}</span>
-      <p className="text-slate-700 leading-relaxed whitespace-pre-wrap">{value || "N/A"}</p>
+      <p className="text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">{value || "N/A"}</p>
     </div>
   );
 }
@@ -382,10 +382,10 @@ function DetailItem({ label, value }: { label: string, value?: string }) {
 function SignatureLine({ label, name }: { label: string, name?: string }) {
   return (
     <div className="space-y-4 text-center">
-      <div className="border-b-2 border-slate-300 h-10"></div>
+      <div className="border-b-2 border-slate-300 dark:border-slate-700 h-10"></div>
       <div>
-        <p className="text-sm font-bold text-slate-900">{name || "________________"}</p>
-        <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">{label}</p>
+        <p className="text-sm font-bold text-slate-900 dark:text-white">{name || "________________"}</p>
+        <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{label}</p>
       </div>
     </div>
   );

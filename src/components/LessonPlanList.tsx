@@ -229,12 +229,12 @@ export function LessonPlanList({ onView, onEdit, onCreate }: LessonPlanListProps
 
   const getStatusBadge = (status: LessonPlanStatus) => {
     switch (status) {
-      case 'approved': return <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-green-200"><CheckCircle2 className="mr-1 h-3 w-3" /> Approved</Badge>;
-      case 'submitted': return <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-blue-200"><Clock className="mr-1 h-3 w-3" /> Submitted</Badge>;
-      case 'under_review': return <Badge className="bg-yellow-100 text-yellow-700 hover:bg-yellow-100 border-yellow-200"><Search className="mr-1 h-3 w-3" /> Under Review</Badge>;
-      case 'rejected': return <Badge className="bg-red-100 text-red-700 hover:bg-red-100 border-red-200"><AlertCircle className="mr-1 h-3 w-3" /> Rejected</Badge>;
-      case 'archived': return <Badge className="bg-slate-100 text-slate-700 hover:bg-slate-100 border-slate-200"><Archive className="mr-1 h-3 w-3" /> Archived</Badge>;
-      default: return <Badge className="bg-slate-100 text-slate-700 hover:bg-slate-100 border-slate-200">Draft</Badge>;
+      case 'approved': return <Badge className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/40 border-green-200 dark:border-green-800"><CheckCircle2 className="mr-1 h-3 w-3" /> Approved</Badge>;
+      case 'submitted': return <Badge className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 border-blue-200 dark:border-blue-800"><Clock className="mr-1 h-3 w-3" /> Submitted</Badge>;
+      case 'under_review': return <Badge className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-100 dark:hover:bg-yellow-900/40 border-yellow-200 dark:border-yellow-800"><Search className="mr-1 h-3 w-3" /> Under Review</Badge>;
+      case 'rejected': return <Badge className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 border-red-200 dark:border-red-800"><AlertCircle className="mr-1 h-3 w-3" /> Rejected</Badge>;
+      case 'archived': return <Badge className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border-slate-200 dark:border-slate-700"><Archive className="mr-1 h-3 w-3" /> Archived</Badge>;
+      default: return <Badge className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border-slate-200 dark:border-slate-700">Draft</Badge>;
     }
   };
 
@@ -287,8 +287,8 @@ export function LessonPlanList({ onView, onEdit, onCreate }: LessonPlanListProps
         </div>
 
         {isAdmin && (
-          <div className="flex flex-wrap items-center gap-2 rounded-lg border bg-slate-50/50 p-2">
-            <span className="px-2 text-xs font-medium text-slate-500 uppercase tracking-wider">Bulk Actions:</span>
+          <div className="flex flex-wrap items-center gap-2 rounded-lg border bg-slate-50/50 dark:bg-slate-900/50 p-2">
+            <span className="px-2 text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Bulk Actions:</span>
             <Button variant="outline" size="sm" onClick={handleDownloadTemplate}>
               <FileDown className="mr-2 h-4 w-4" />
               Template
@@ -313,9 +313,9 @@ export function LessonPlanList({ onView, onEdit, onCreate }: LessonPlanListProps
       </div>
 
       {filteredPlans.length === 0 ? (
-        <Card className="flex flex-col items-center justify-center py-12 text-center">
-          <FileText className="h-12 w-12 text-slate-200" />
-          <CardTitle className="mt-4 text-slate-600">No lesson plans found</CardTitle>
+        <Card className="flex flex-col items-center justify-center py-12 text-center dark:bg-slate-900 dark:border-slate-800">
+          <FileText className="h-12 w-12 text-slate-200 dark:text-slate-800" />
+          <CardTitle className="mt-4 text-slate-600 dark:text-slate-400">No lesson plans found</CardTitle>
           <CardDescription>Try adjusting your filters or create a new plan</CardDescription>
           <Button variant="outline" className="mt-6" onClick={onCreate}>
             Create your first plan
@@ -324,15 +324,15 @@ export function LessonPlanList({ onView, onEdit, onCreate }: LessonPlanListProps
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filteredPlans.map((plan) => (
-            <Card key={plan.id} className="group overflow-hidden border-slate-200 transition-all hover:border-primary/50 hover:shadow-md">
+            <Card key={plan.id} className="group overflow-hidden border-slate-200 dark:border-slate-800 dark:bg-slate-900 transition-all hover:border-primary/50 hover:shadow-md">
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
-                    <CardTitle className="text-lg font-bold text-slate-900">{plan.subject}</CardTitle>
+                    <CardTitle className="text-lg font-bold text-slate-900 dark:text-white">{plan.subject}</CardTitle>
                     <CardDescription className="flex flex-col text-xs space-y-1">
                       <span>Week {plan.week} • {plan.form}</span>
                       {plan.day && plan.weekEndingDate && (
-                        <span className="text-slate-400">{plan.day} • Ending: {format(new Date(plan.weekEndingDate), 'MMM d')}</span>
+                        <span className="text-slate-400 dark:text-slate-500">{plan.day} • Ending: {format(new Date(plan.weekEndingDate), 'MMM d')}</span>
                       )}
                     </CardDescription>
                   </div>
@@ -341,31 +341,31 @@ export function LessonPlanList({ onView, onEdit, onCreate }: LessonPlanListProps
               </CardHeader>
               <CardContent className="pb-3">
                 <div className="space-y-2">
-                  <div className="flex items-center text-sm text-slate-600">
-                    <span className="font-medium mr-2">Strand:</span>
+                  <div className="flex items-center text-sm text-slate-600 dark:text-slate-400">
+                    <span className="font-medium mr-2 text-slate-900 dark:text-slate-300">Strand:</span>
                     <span className="truncate">{plan.strand}</span>
                   </div>
-                  <div className="flex items-center text-sm text-slate-500">
-                    <span className="font-medium mr-2">Facilitator:</span>
+                  <div className="flex items-center text-sm text-slate-500 dark:text-slate-500">
+                    <span className="font-medium mr-2 text-slate-900 dark:text-slate-300">Facilitator:</span>
                     <span>{plan.facilitatorName}</span>
                   </div>
                 </div>
               </CardContent>
-              <CardFooter className="flex items-center justify-between border-t bg-slate-50/50 px-6 py-3">
-                <span className="text-xs text-slate-400">
+              <CardFooter className="flex items-center justify-between border-t dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 px-6 py-3">
+                <span className="text-xs text-slate-400 dark:text-slate-500">
                   Updated {format(new Date(plan.updatedAt), 'MMM d, yyyy')}
                 </span>
                 <div className="flex gap-1">
                   <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onView(plan.id)}>
-                    <Eye className="h-4 w-4 text-slate-600" />
+                    <Eye className="h-4 w-4 text-slate-600 dark:text-slate-400" />
                   </Button>
                   {(plan.status === 'draft' || plan.status === 'rejected' || auth.currentUser?.uid === plan.facilitatorId) && (
                     <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onEdit(plan.id)}>
-                      <Edit className="h-4 w-4 text-slate-600" />
+                      <Edit className="h-4 w-4 text-slate-600 dark:text-slate-400" />
                     </Button>
                   )}
-                  <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-red-50" onClick={() => handleDelete(plan.id)}>
-                    <Trash2 className="h-4 w-4 text-red-400" />
+                  <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-red-50 dark:hover:bg-red-900/20" onClick={() => handleDelete(plan.id)}>
+                    <Trash2 className="h-4 w-4 text-red-400 dark:text-red-500" />
                   </Button>
                 </div>
               </CardFooter>

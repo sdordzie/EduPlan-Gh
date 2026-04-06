@@ -240,8 +240,8 @@ export function DocumentVault() {
 
       {filteredMaterials.length === 0 ? (
         <Card className="flex flex-col items-center justify-center py-12 text-center">
-          <FolderOpen className="h-12 w-12 text-slate-200" />
-          <CardTitle className="mt-4 text-slate-600">Your vault is empty</CardTitle>
+          <FolderOpen className="h-12 w-12 text-slate-200 dark:text-slate-800" />
+          <CardTitle className="mt-4 text-slate-600 dark:text-slate-400">Your vault is empty</CardTitle>
           <CardDescription>Start adding documents, links, or notes to your personal vault</CardDescription>
         </Card>
       ) : (
@@ -249,7 +249,7 @@ export function DocumentVault() {
           {filteredMaterials.map((m) => (
             <Card key={m.id} className="group transition-all hover:border-primary/50 hover:shadow-md overflow-hidden">
               {m.type === 'file' && m.mimeType?.startsWith('image/') && (
-                <div className="h-32 w-full overflow-hidden bg-slate-100">
+                <div className="h-32 w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
                   <img 
                     src={m.content} 
                     alt={m.name} 
@@ -269,9 +269,9 @@ export function DocumentVault() {
                     {m.type === 'link' && <LinkIcon className="h-5 w-5 text-blue-500 shrink-0" />}
                     {m.type === 'note' && <FileText className="h-5 w-5 text-orange-500 shrink-0" />}
                     {m.type === 'file' && getFileIcon(m.mimeType)}
-                    <CardTitle className="text-base font-bold text-slate-900 truncate">{m.name}</CardTitle>
+                    <CardTitle className="text-base font-bold text-slate-900 dark:text-white truncate">{m.name}</CardTitle>
                   </div>
-                  <span className="text-[10px] font-bold uppercase text-slate-400 shrink-0">{m.type}</span>
+                  <span className="text-[10px] font-bold uppercase text-slate-400 dark:text-slate-500 shrink-0">{m.type}</span>
                 </div>
               </CardHeader>
               <CardContent className="pb-3">
@@ -296,21 +296,21 @@ export function DocumentVault() {
                 ) : (
                   <div className="space-y-1">
                     {m.description && (
-                      <p className="text-xs font-medium text-slate-700 line-clamp-1">{m.description}</p>
+                      <p className="text-xs font-medium text-slate-700 dark:text-slate-300 line-clamp-1">{m.description}</p>
                     )}
-                    <p className="text-sm text-slate-500 line-clamp-2 min-h-[40px]">
+                    <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 min-h-[40px]">
                       {m.type === 'note' ? m.content : m.content}
                     </p>
                     {m.size && (
-                      <p className="text-[10px] text-slate-400 font-medium">
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">
                         {(m.size / 1024 / 1024).toFixed(2)} MB
                       </p>
                     )}
                   </div>
                 )}
               </CardContent>
-              <CardFooter className="flex items-center justify-between border-t bg-slate-50/50 px-4 py-2">
-                <span className="text-[10px] text-slate-400">
+              <CardFooter className="flex items-center justify-between border-t dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 px-4 py-2">
+                <span className="text-[10px] text-slate-400 dark:text-slate-500">
                   {format(new Date(m.updatedAt), 'MMM d, yyyy')}
                 </span>
                 <div className="flex gap-1">

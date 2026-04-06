@@ -89,9 +89,9 @@ export function UserProfile() {
     <div className="mx-auto max-w-3xl space-y-8">
       <div className="flex items-center gap-6">
         <div className="relative group">
-          <Avatar className="h-24 w-24 border-4 border-white shadow-xl">
+          <Avatar className="h-24 w-24 border-4 border-white dark:border-slate-800 shadow-xl">
             <AvatarImage src={photoURL} />
-            <AvatarFallback className="text-2xl font-bold bg-primary text-white">
+            <AvatarFallback className="text-2xl font-bold bg-primary text-primary-foreground">
               {displayName?.charAt(0)}
             </AvatarFallback>
           </Avatar>
@@ -100,8 +100,8 @@ export function UserProfile() {
           </div>
         </div>
         <div className="space-y-1">
-          <h1 className="text-3xl font-black text-slate-900">{displayName || 'Facilitator'}</h1>
-          <p className="text-slate-500 font-medium flex items-center gap-2">
+          <h1 className="text-3xl font-black text-slate-900 dark:text-white">{displayName || 'Facilitator'}</h1>
+          <p className="text-slate-500 dark:text-slate-400 font-medium flex items-center gap-2">
             <Mail size={16} /> {profile.email}
           </p>
           <div className="flex items-center gap-2 mt-2">
@@ -109,7 +109,7 @@ export function UserProfile() {
               <Shield className="mr-1 h-3 w-3" /> {profile.role.replace('_', ' ')}
             </span>
             {school && (
-              <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-bold text-slate-600 uppercase tracking-wider">
+              <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
                 <SchoolIcon className="mr-1 h-3 w-3" /> {school.name}
               </span>
             )}
@@ -153,7 +153,7 @@ export function UserProfile() {
               </div>
             </div>
           </CardContent>
-          <CardFooter className="border-t bg-slate-50/50 py-4">
+          <CardFooter className="border-t dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 py-4">
             <Button onClick={handleSave} disabled={saving} className="ml-auto">
               {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
               Save Changes
@@ -169,18 +169,18 @@ export function UserProfile() {
           <CardContent className="space-y-4">
             <div className="space-y-1">
               <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">User ID</span>
-              <p className="text-xs font-mono text-slate-600 break-all">{profile.uid}</p>
+              <p className="text-xs font-mono text-slate-600 dark:text-slate-400 break-all">{profile.uid}</p>
             </div>
             <div className="space-y-1">
               <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Joined On</span>
-              <p className="text-sm font-medium text-slate-900 flex items-center gap-2">
+              <p className="text-sm font-medium text-slate-900 dark:text-white flex items-center gap-2">
                 <Calendar size={14} className="text-primary" />
                 {format(new Date(profile.createdAt), 'MMMM d, yyyy')}
               </p>
             </div>
             <div className="space-y-1">
               <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">School Type</span>
-              <p className="text-sm font-medium text-slate-900 capitalize">{school?.type || 'N/A'}</p>
+              <p className="text-sm font-medium text-slate-900 dark:text-white capitalize">{school?.type || 'N/A'}</p>
             </div>
           </CardContent>
         </Card>
